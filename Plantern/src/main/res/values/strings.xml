@@ -1,0 +1,4 @@
+<resources>
+    <string name="p_handset_info">手机型号:%1$s,SDK版本:%2$d,系统版本:%3$s,应用版本:%4$s,开发版本:%5$d</string>
+    <string name="p_again_exit">再按一次退出程序</string>
+</resources>

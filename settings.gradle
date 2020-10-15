@@ -1,0 +1,3 @@
+include ':Plantern'
+include ':app'
+rootProject.name = "PlanternSample"
