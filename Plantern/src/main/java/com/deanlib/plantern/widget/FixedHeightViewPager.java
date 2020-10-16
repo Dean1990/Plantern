@@ -1,10 +1,11 @@
 package com.deanlib.plantern.widget;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * 当viewpager中每页的高度一致时，尤其是第一页高度很小时（小于屏幕高度），可能会出现后面页与第一页高度相等的问题，撑不开的问题
