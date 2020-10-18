@@ -1,6 +1,8 @@
 package com.deanlib.plantern.utils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 数值计算类
@@ -50,5 +52,36 @@ public class MathUtils {
 
     public static float moneyDivide(float x, float y) {
         return BigDecimal.valueOf(x).divide(BigDecimal.valueOf(y)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+    }
+
+    /**
+     * 获取一段范围 自然数增序
+     * @param start
+     * @param end
+     * @param unit 单位
+     * @return
+     */
+    public static List<String> getRange(int start, int end, String unit){
+        List<String> list = new ArrayList<>();
+        for (;start <= end;start++){
+            list.add(start + unit);
+        }
+        return list;
+    }
+
+    /**
+     *
+     * @param start
+     * @param end
+     * @param unit
+     * @param step 步长
+     * @return
+     */
+    public static List<String> getRange(int start,int end,String unit,int step){
+        List<String> list = new ArrayList<>();
+        for (;start <= end;start+=step){
+            list.add(start + unit);
+        }
+        return list;
     }
 }
