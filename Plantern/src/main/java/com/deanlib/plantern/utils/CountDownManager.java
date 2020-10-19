@@ -5,9 +5,9 @@ import android.os.CountDownTimer;
 /**
  * 全局的倒计时
  */
-public class CountDownUtils {
+public class CountDownManager {
 
-    private static CountDownUtils instance;
+    private static CountDownManager instance;
 
     private static CountDownTimer countDownTimer; //做一个全局倒计时
 
@@ -16,7 +16,7 @@ public class CountDownUtils {
 
     CountDownTimerListener cdtListener;
 
-    private CountDownUtils(long millisInFuture, long countDownInterval){
+    private CountDownManager(long millisInFuture, long countDownInterval){
         mMillisInFuture = millisInFuture;
         mCountDownInterval = countDownInterval;
         countDownTimer = new CountDownTimer(millisInFuture,countDownInterval) {
@@ -34,15 +34,15 @@ public class CountDownUtils {
         };
     }
 
-    public static CountDownUtils getInstance(){
+    public static CountDownManager getInstance(){
         return getInstance(mMillisInFuture, mCountDownInterval);
     }
 
-    public static CountDownUtils getInstance(long millisInFuture, long countDownInterval){
+    public static CountDownManager getInstance(long millisInFuture, long countDownInterval){
         if (instance == null){
-            synchronized (CountDownUtils.class){
+            synchronized (CountDownManager.class){
                 if (instance == null){
-                    instance = new CountDownUtils(millisInFuture, countDownInterval);
+                    instance = new CountDownManager(millisInFuture, countDownInterval);
                 }
             }
         }

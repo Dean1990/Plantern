@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -298,6 +299,109 @@ public class FormatUtils {
             }
         }
         return 0;
+    }
+
+    /**
+     * 格式化时间
+     * @param l
+     * @param emptyVal
+     * @return 3小时23分钟
+     */
+    public static String formatTime(long l, String emptyVal){
+        l = l/1000;
+        int h = (int) (l / 3600);
+        int m = (int)(l % 3600 / 60);
+//        int s = (int) (l % 3600 % 60);
+        StringBuffer sb = new StringBuffer();
+        if (h>0){
+            sb.append(h+"小时");
+        }
+        if (m>0){
+            sb.append(m+"分钟");
+        }
+        if (sb.toString().trim().isEmpty()){
+            return emptyVal;
+        }else {
+            return sb.toString();
+        }
+
+    }
+
+    /**
+     * 用撇标示的速度
+     * 小时不用撇（°），分用一撇 （’），秒用两撇（”）
+     * 1°=60′，1′=60″ ，1°=3600″。
+     * @param l 单位 秒
+     * @return
+     */
+    public static String formatSpeed(long l){
+        int h = (int) (l / 3600);
+        int m = (int)(l % 3600 / 60);
+        int s = (int) (l % 3600 % 60);
+        StringBuffer sb = new StringBuffer();
+        if (h>0){
+            sb.append(h+"°");
+        }
+        if (m>0){
+            sb.append(m+"’");
+        }
+        if (s>0){
+            sb.append(s+"”");
+        }
+        if (sb.toString().trim().isEmpty()){
+            return "0";
+        }else {
+            return sb.toString();
+        }
+
+    }
+
+    /**
+     * 对小数取舍
+     * @param value
+     * @param scale
+     * @return
+     */
+    public static String formatFloat(float value, int scale){
+        BigDecimal decimal = new BigDecimal(value);
+        return decimal.setScale(scale, BigDecimal.ROUND_DOWN).toString();
+    }
+
+    /**
+     * 将字符串转为16进制
+     * @param str
+     * @return
+     */
+    public static String convertStr2HexStr(String str) {
+        char[] chars = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bs = str.getBytes();
+        int bit;
+        for (int i = 0; i < bs.length; i++) {
+            bit = (bs[i] & 0x0f0) >> 4;
+            sb.append(chars[bit]);
+            bit = bs[i] & 0x0f;
+            sb.append(chars[bit]);
+            // sb.append(' ');
+        }
+        return sb.toString().trim();
+    }
+    /**
+     * 将16进制转为字符串
+     * @param hexStr
+     * @return
+     */
+    public static String convertHexStr2Str(String hexStr) {
+        String str = "0123456789ABCDEF";
+        char[] hexs = hexStr.toCharArray();
+        byte[] bytes = new byte[hexStr.length() / 2];
+        int n;
+        for (int i = 0; i < bytes.length; i++) {
+            n = str.indexOf(hexs[2 * i]) * 16;
+            n += str.indexOf(hexs[2 * i + 1]);
+            bytes[i] = (byte) (n & 0xff);
+        }
+        return new String(bytes);
     }
 
 }

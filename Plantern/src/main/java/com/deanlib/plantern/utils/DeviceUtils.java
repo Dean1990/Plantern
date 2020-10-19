@@ -216,7 +216,7 @@ public class DeviceUtils {
      *
      * @return
      */
-    public static boolean isWifi() {
+    public static boolean isWifiConn() {
 
         return NetworkManager.isWifiConn();
     }
@@ -227,8 +227,8 @@ public class DeviceUtils {
      * @return
      */
     public static String getHandSetInfo() {
-        String handSetInfo = String.format(Plantern.getAppContext().getString(R.string.p_handset_info)
-                , Build.MODEL, Build.VERSION.SDK_INT, Build.VERSION.RELEASE
+        String handSetInfo = String.format(Plantern.getAppContext().getString(R.string.p_handset_info),
+                Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT, Build.VERSION.RELEASE
                 , VersionUtils.getAppVersionName(), VersionUtils.getAppVersionCode());
         return handSetInfo;
     }

@@ -7,13 +7,13 @@ import android.content.IntentFilter;
 /**
  * 
  */
-public class BluetoothUtils {
+public class BluetoothManager {
 
-    private static BluetoothUtils INSTANCE;
+    private static BluetoothManager INSTANCE;
 
-    public static synchronized BluetoothUtils getInstance() {
+    public static synchronized BluetoothManager getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new BluetoothUtils();
+            INSTANCE = new BluetoothManager();
         }
         return INSTANCE;
     }
