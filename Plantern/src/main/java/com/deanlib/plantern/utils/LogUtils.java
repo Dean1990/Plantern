@@ -24,8 +24,6 @@ public class LogUtils {
 
     public static String customTagPrefix = "plantern_log";
 
-    private static boolean isDebug;
-
     private static LogUtils dlog;
 
     private static boolean writeable;
@@ -42,7 +40,6 @@ public class LogUtils {
 
     private LogUtils() {
 
-        this.isDebug = Plantern.isDebug();
 
     }
 
@@ -54,9 +51,7 @@ public class LogUtils {
     public static LogUtils getInstance() {
 
         if (dlog == null) {
-
             dlog = new LogUtils();
-
         }
 
         return dlog;
@@ -173,7 +168,7 @@ public class LogUtils {
     }
 
     public static void d(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -183,7 +178,7 @@ public class LogUtils {
     }
 
     public static void d(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -191,7 +186,7 @@ public class LogUtils {
     }
 
     public static void e(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -201,7 +196,7 @@ public class LogUtils {
     }
 
     public static void e(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -211,7 +206,7 @@ public class LogUtils {
     }
 
     public static void i(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -221,7 +216,7 @@ public class LogUtils {
     }
 
     public static void i(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -232,7 +227,7 @@ public class LogUtils {
     }
 
     public static void v(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -242,7 +237,7 @@ public class LogUtils {
     }
 
     public static void v(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -252,7 +247,7 @@ public class LogUtils {
     }
 
     public static void w(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -262,7 +257,7 @@ public class LogUtils {
     }
 
     public static void w(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -272,7 +267,7 @@ public class LogUtils {
     }
 
     public static void w(Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -282,7 +277,7 @@ public class LogUtils {
     }
 
     public static void wtf(String content) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -292,7 +287,7 @@ public class LogUtils {
     }
 
     public static void wtf(String content, Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
@@ -302,7 +297,7 @@ public class LogUtils {
     }
 
     public static void wtf(Throwable tr) {
-        if (!isDebug)
+        if (!Plantern.isDebug())
             return;
         String tag = generateTag();
 
