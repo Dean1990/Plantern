@@ -31,7 +31,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 
 import com.deanlib.plantern.Plantern;
@@ -637,7 +637,12 @@ public class AppUtils {
     }
 
 
-    public static void setSystemAppbarTranslucent(Activity activity){
+    /**
+     * 设置状态栏和底部导航栏透明
+     * @param activity
+     * @param light 设置状态栏亮色还是暗色
+     */
+    public static void setSystemAppbarTranslucent(Activity activity, boolean light){
         int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
         int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
         Window window = activity.getWindow();
@@ -658,17 +663,16 @@ public class AppUtils {
 //
 //        }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            Window window = activity.getWindow();
-//            View decorView = window.getDecorView();
-//
-//            WindowInsetsControllerCompat wic = new WindowInsetsControllerCompat(window, decorView);
-//
-//            wic.setAppearanceLightStatusBars(light); // true or false as desired.
-//
-//            // And then you can set any background color to the status bar.
-////            window.setStatusBarColor(Color.WHITE);
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = window.getDecorView();
+
+            WindowInsetsControllerCompat wic = new WindowInsetsControllerCompat(window, decorView);
+
+            wic.setAppearanceLightStatusBars(light); // true or false as desired.
+
+            // And then you can set any background color to the status bar.
+//            window.setStatusBarColor(Color.WHITE);
+        }
 
 
     }

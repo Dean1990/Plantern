@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.deanlib.plantern.utils.FormatUtils;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
