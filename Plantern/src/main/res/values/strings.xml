@@ -1,4 +1,11 @@
 <resources>
     <string name="p_handset_info">制造商:%1$s,手机型号:%2$s,SDK版本:%3$d,系统版本:%4$s,应用版本:%5$s,开发版本:%6$d</string>
     <string name="p_again_exit">再按一次退出程序</string>
+    <string name="p_just_now">刚刚</string>
+    <string name="p_minute">%d分钟</string>
+    <string name="p_hour">%d小时</string>
+    <string name="p_yesterday">昨天</string>
+    <string name="p_thousand">%d千</string>
+    <string name="p_ten_thousand">%d万</string>
+    <string name="p_a_hundred_million">%d亿</string>
 </resources>

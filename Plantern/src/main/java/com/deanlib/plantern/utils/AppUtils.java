@@ -14,6 +14,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -23,11 +24,14 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 
 import com.deanlib.plantern.Plantern;
@@ -42,6 +46,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * 应用操作相关
@@ -631,5 +636,41 @@ public class AppUtils {
         }
     }
 
+
+    public static void setSystemAppbarTranslucent(Activity activity){
+        int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+        Window window = activity.getWindow();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            attributes.flags |= flagTranslucentNavigation;
+            window.setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            attributes.flags |= flagTranslucentStatus | flagTranslucentNavigation;
+        }
+        window.setAttributes(attributes);
+
+        //系统弃用了
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            activity.getWindow().getDecorView().setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//
+//        }
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Window window = activity.getWindow();
+//            View decorView = window.getDecorView();
+//
+//            WindowInsetsControllerCompat wic = new WindowInsetsControllerCompat(window, decorView);
+//
+//            wic.setAppearanceLightStatusBars(light); // true or false as desired.
+//
+//            // And then you can set any background color to the status bar.
+////            window.setStatusBarColor(Color.WHITE);
+//        }
+
+
+    }
 
 }

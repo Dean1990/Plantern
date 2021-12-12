@@ -155,11 +155,11 @@ public class DateUtils {
         }
         calendar.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
         StringBuffer sb = new StringBuffer();
-        sb.append(FormatUtils.convertDateTimestampToString(calendar.getTimeInMillis(),"M/d"));
+        sb.append(FormatUtils.convertTimestampToString(calendar.getTimeInMillis(),"M/d"));
         sb.append("-");
         calendar.add(Calendar.WEEK_OF_YEAR,1);
         calendar.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-        sb.append(FormatUtils.convertDateTimestampToString(calendar.getTimeInMillis(),"M/d"));
+        sb.append(FormatUtils.convertTimestampToString(calendar.getTimeInMillis(),"M/d"));
         return sb.toString();
     }
 

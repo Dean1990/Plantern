@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -283,6 +284,22 @@ public class DeviceUtils {
         long blockSize = stat.getBlockSize();
         long availableBlocks = stat.getAvailableBlocks();
         return blockSize * availableBlocks;
+    }
+
+    /**
+     * 只针对 字号的转换
+     * @param sp
+     * @return
+     */
+    public static float sp2pix(float sp){
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, sp,
+                Plantern.getAppContext().getResources().getDisplayMetrics());
+    }
+
+    public static String getDeviceId(){
+        DeviceUuidFactory deviceUuidFactory = new DeviceUuidFactory(Plantern.getAppContext());
+        String deviceId = deviceUuidFactory.getDeviceUuid().toString();
+        return deviceId;
     }
 
 }

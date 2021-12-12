@@ -1,16 +1,20 @@
 package com.deanlib.plantern.utils;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StrikethroughSpan;
 
+import com.deanlib.plantern.Plantern;
+import com.deanlib.plantern.R;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -52,24 +56,24 @@ public class FormatUtils {
      * @param format    格式
      * @return 指定格式的字符串
      */
-    public static String convertDateTimestampToString(long timestamp, String format) {
+    public static String convertTimestampToString(long timestamp, String format) {
 
         Date date = new Date(timestamp);
 
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
 
         return sdf.format(date);
 
     }
 
+
     /**
      * 时间戳转带描述的字符串
-     *
-     * @param timestamp 时间戳
-     * @return 小于6小时有文字描述，否则 "yyyy-MM-dd HH:mm:ss" 格式的字符串
+     * @param timestamp
+     * @return yyyy-MM-dd
      */
-    public static String convertDateTimestampToDescribeString(long timestamp) {
-        return convertDateTimestampToDescribeString(timestamp, DATE_FORMAT_YMDHMS);
+    public static String convertTimestampToDescribe(long timestamp){
+        return convertTimestampToDescribe(timestamp, FormatUtils.DATE_FORMAT_YMD);
     }
 
 
@@ -78,46 +82,98 @@ public class FormatUtils {
      *
      * @param timestamp 时间戳
      * @param format    格式
-     * @return 小于6小时有文字描述，否则指定格式的字符串
+     * @return
      */
-    public static String convertDateTimestampToDescribeString(long timestamp, String format) {
+    public static String convertTimestampToDescribe(long timestamp, String format) {
 
-        long l = System.currentTimeMillis() - timestamp;
+        String formatStr = "";
+        long diff = System.currentTimeMillis() - timestamp;
+        if (diff < 1000 * 60){ //1分钟以内
+            formatStr = Plantern.getAppContext().getString(R.string.p_just_now);
+        }else if (diff < 1000 * 3600){ //1小时以内
+            formatStr = Plantern.getAppContext().getString(R.string.p_minute, diff/(1000*60));
+        }else if (diff < 1000 * 3600 * 24) { //1天以内
+            formatStr = Plantern.getAppContext().getString(R.string.p_hour, diff/(1000*3600));
+        }else if (diff < 1000 * 3600 * 48){ //昨天
+            formatStr = Plantern.getAppContext().getString(R.string.p_yesterday);
+        }else {
+            formatStr = convertTimestampToString(timestamp, format);
+        }
 
-        if (l < 1000 * 60)
-            return "刚刚";
-        else if (l < 1000 * 60 * 2)
-            return "1分钟前";
-        else if (l < 1000 * 60 * 3)
-            return "2分钟前";
-        else if (l < 1000 * 60 * 4)
-            return "3分钟前";
-        else if (l < 1000 * 60 * 5)
-            return "4分钟前";
-        else if (l < 1000 * 60 * 10)
-            return "5分钟前";
-        else if (l < 1000 * 60 * 20)
-            return "10分钟前";
-        else if (l < 1000 * 60 * 30)
-            return "20分钟前";
-        else if (l < 1000 * 60 * 60)
-            return "30分钟前";
-        else if (l < 1000 * 60 * 60 * 2)
-            return "1小时前";
-        else if (l < 1000 * 60 * 60 * 3)
-            return "2小时前";
-        else if (l < 1000 * 60 * 60 * 4)
-            return "3小时前";
-        else if (l < 1000 * 60 * 60 * 5)
-            return "4小时前";
-        else if (l < 1000 * 60 * 60 * 6)
-            return "5小时前";
-        else if (l < 1000 * 60 * 60 * 7)
-            return "6小时前";
-        else
-            return convertDateTimestampToString(timestamp, format);
+        return formatStr;
 
 
+    }
+
+    /**
+     * 时间戳转带描述的字符串 精确的
+     * @param timestamp
+     * @return
+     * 18:20
+     * 昨天 19:23
+     * 周一 06:10
+     * 2-18 02:46
+     * 2019-4-8 11:04
+     */
+    public static String convertTimestampToExactDescribe(long timestamp){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);//周一为一周的开始
+        calendar.setMinimalDaysInFirstWeek(7);//一周至少7天,解决，跨年获取的周出现的问题
+
+        //当前年 月 周
+        int cYear = calendar.get(Calendar.YEAR);
+        int cWeekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        //获取昨天的时间范围
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long todayStart = calendar.getTimeInMillis();
+        calendar.add(Calendar.DATE, -1);
+        long yesterdayStart = calendar.getTimeInMillis();
+
+        //给定的时间的年 月 周
+        calendar.setTimeInMillis(timestamp);
+        int year = calendar.get(Calendar.YEAR);
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+
+        StringBuilder sb = new StringBuilder();
+        if (cWeekOfYear == weekOfYear){
+            //同一周
+            if (timestamp > todayStart){
+                //今天 什么也不加
+            } else if (timestamp < todayStart && timestamp >= yesterdayStart ){
+                //昨天
+                sb.append(Plantern.getAppContext().getString(R.string.p_yesterday)).append(" ");
+            }else {
+                //其他的显示 周一， 周二 ...
+                String[] weeks = Plantern.getAppContext().getResources().getStringArray(R.array.p_weeks);
+                //周的取值是 1-7
+                sb.append(weeks[calendar.get(Calendar.DAY_OF_WEEK)]).append(" ");
+            }
+
+        }else{
+            if (cYear != year){
+                //不是同一年
+                sb.append(FormatUtils.convertTimestampToString(timestamp,FormatUtils.DATE_FORMAT_YMD)).append(" ");
+            }
+            sb.append(FormatUtils.convertTimestampToString(timestamp,FormatUtils.DATE_FORMAT_MD)).append(" ");
+        }
+
+        sb.append(FormatUtils.convertTimestampToString(timestamp,"HH:mm"));
+
+        return sb.toString();
+    }
+
+    /**
+     * 格式化 年月日，对小于10的数字补0
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
+    public static String formatYMD(int year, int month, int day){
+        return String.valueOf(year) + addZeroFront(month, 2) + addZeroFront(day, 2);
     }
 
     /**
@@ -127,20 +183,19 @@ public class FormatUtils {
      * @param format 格式
      * @return 时间戳
      */
-    public static long convertDateStringToTimestamp(String string, String format) {
+    public static long convertStringToTimestamp(String string, String format) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
+        long l = 0;
         try {
             Date date = sdf.parse(string);
-
-            return date.getTime();
-
+            if (date != null) {
+                l = date.getTime();
+            }
         } catch (ParseException e) {
             e.printStackTrace();
-            return 0;
         }
-
+        return l;
     }
 
     /**
@@ -154,40 +209,44 @@ public class FormatUtils {
         if (num < 1000)
             return num + "";
         else if (num < 10000)
-            return (num / 1000) + "千";
+            return Plantern.getAppContext().getString(R.string.p_thousand, num / 1000);
         else if (num < 100000000)
-            return (num / 10000) + "万";
+            return Plantern.getAppContext().getString(R.string.p_ten_thousand, num / 10000);
         else
-            return (num / 100000000) + "亿";
-
+            return Plantern.getAppContext().getString(R.string.p_a_hundred_million, num / 100000000);
 
     }
 
     /**
      * 毫秒转时长
      *
-     * @param l 毫秒
+     * @param timestamp 毫秒
      * @return h:m:s
      */
-    public static String convertNumLongToDuration(long l) {
+    public static String convertTimestampToDuration(long timestamp) {
 
-        l = l / 1000;
-
-        String h = addZero((int) (l / 3600));
-
-        String m = addZero((int) (l % 3600 / 60));
-
-        String s = addZero((int) (l % 3600 % 60));
-
+        long second = timestamp / 1000;
+        String h = addZeroFront((int) (second / 3600), 2);
+        String m = addZeroFront((int) (second % 3600 / 60), 2);
+        String s = addZeroFront((int) (second % 3600 % 60), 2);
         if ("00".equals(h)) {
             return h + ":" + m + ":" + s;
         }
         return m + ":" + s;
     }
 
-    private static String addZero(int h) {
-
-        return h < 10 ? "0" + h : h + "";
+    /**
+     * 在前面补0
+     * @param n
+     * @param length 总长度 包括n
+     * @return
+     */
+    public static String addZeroFront(int n, int length) {
+        StringBuilder str = new StringBuilder(String.valueOf(n));
+        for(int i = str.length();i<length;i++){
+            str.insert(0, "0");
+        }
+        return str.toString();
     }
 
     /**
@@ -256,6 +315,11 @@ public class FormatUtils {
         return formatRMB(decimal.setScale(2, BigDecimal.ROUND_DOWN).toString());
     }
 
+    /**
+     * 格式化人民币
+     * @param money
+     * @return
+     */
     public static String formatRMB(String money) {
         return "¥ " + money;
     }
@@ -312,12 +376,12 @@ public class FormatUtils {
         int h = (int) (l / 3600);
         int m = (int)(l % 3600 / 60);
 //        int s = (int) (l % 3600 % 60);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (h>0){
-            sb.append(h+"小时");
+            sb.append(Plantern.getAppContext().getString(R.string.p_hour, h));
         }
         if (m>0){
-            sb.append(m+"分钟");
+            sb.append(Plantern.getAppContext().getString(R.string.p_minute, m));
         }
         if (sb.toString().trim().isEmpty()){
             return emptyVal;
@@ -338,15 +402,15 @@ public class FormatUtils {
         int h = (int) (l / 3600);
         int m = (int)(l % 3600 / 60);
         int s = (int) (l % 3600 % 60);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (h>0){
-            sb.append(h+"°");
+            sb.append(h).append("°");
         }
         if (m>0){
-            sb.append(m+"’");
+            sb.append(m).append("’");
         }
         if (s>0){
-            sb.append(s+"”");
+            sb.append(s).append("”");
         }
         if (sb.toString().trim().isEmpty()){
             return "0";
@@ -368,40 +432,19 @@ public class FormatUtils {
     }
 
     /**
-     * 将字符串转为16进制
-     * @param str
+     * 格式化 大于 limit 追加 "+"
+     * @param num
+     * @param limit
      * @return
      */
-    public static String convertStr2HexStr(String str) {
-        char[] chars = "0123456789ABCDEF".toCharArray();
-        StringBuilder sb = new StringBuilder("");
-        byte[] bs = str.getBytes();
-        int bit;
-        for (int i = 0; i < bs.length; i++) {
-            bit = (bs[i] & 0x0f0) >> 4;
-            sb.append(chars[bit]);
-            bit = bs[i] & 0x0f;
-            sb.append(chars[bit]);
-            // sb.append(' ');
+    public static String formatNumToPlus(long num, long limit){
+        StringBuilder sb = new StringBuilder();
+        if (num > limit){
+            sb.append(limit).append("+");
+        }else {
+            sb.append(num);
         }
-        return sb.toString().trim();
-    }
-    /**
-     * 将16进制转为字符串
-     * @param hexStr
-     * @return
-     */
-    public static String convertHexStr2Str(String hexStr) {
-        String str = "0123456789ABCDEF";
-        char[] hexs = hexStr.toCharArray();
-        byte[] bytes = new byte[hexStr.length() / 2];
-        int n;
-        for (int i = 0; i < bytes.length; i++) {
-            n = str.indexOf(hexs[2 * i]) * 16;
-            n += str.indexOf(hexs[2 * i + 1]);
-            bytes[i] = (byte) (n & 0xff);
-        }
-        return new String(bytes);
+        return sb.toString();
     }
 
 }

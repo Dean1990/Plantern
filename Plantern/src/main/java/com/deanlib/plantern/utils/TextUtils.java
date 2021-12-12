@@ -1,8 +1,12 @@
 package com.deanlib.plantern.utils;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,7 +93,7 @@ public class TextUtils {
      * @param str
      * @return
      */
-    public static String string2unicode(String str) {
+    public static String stringToUnicode(String str) {
         str = (str == null ? "" : str);
         String tmp;
         StringBuffer sb = new StringBuffer(1000);
@@ -120,12 +124,12 @@ public class TextUtils {
      * @param str
      * @return
      */
-    public static String unicode2string(String str) {
+    public static String unicodeToString(String str) {
         str = (str == null ? "" : str);
-        if (str.indexOf("\\u") == -1)
+        if (!str.contains("\\u"))
             return str;
 
-        StringBuffer sb = new StringBuffer(1000);
+        StringBuilder sb = new StringBuilder(1000);
 
         for (int i = 0; i <= str.length() - 6; ) {
             String strTemp = str.substring(i, i + 6);
@@ -167,31 +171,6 @@ public class TextUtils {
     }
 
     /**
-     * 关键字着色器
-     *
-     * @param text
-     * @param keywords
-     * @param color
-     * @return
-     */
-    public static SpannableString renderKeywordsSpannable(String text, String keywords, int color) {
-
-
-        SpannableString ss = new SpannableString(text);
-
-        try {
-
-            int index0 = text.indexOf(keywords);
-
-            int index1 = index0 + keywords.length();
-
-            ss.setSpan(new ForegroundColorSpan(color), index0, index1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-        } catch (Exception e) {
-        }
-        return ss;
-    }
-
-    /**
      * URL汉字解码
      *
      * @param src 需要进行解码的字符串
@@ -201,7 +180,7 @@ public class TextUtils {
     public static String unescape(String src) {
         if (src == null || src.equals("")) return null;
 
-        StringBuffer tmp = new StringBuffer();
+        StringBuilder tmp = new StringBuilder();
         tmp.ensureCapacity(src.length());
         int lastPos = 0, pos = 0;
         char ch;
@@ -233,6 +212,43 @@ public class TextUtils {
     }
 
     /**
+     * 将字符串转为16进制
+     * @param str
+     * @return
+     */
+    public static String stringToHexStr(String str) {
+        char[] chars = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bs = str.getBytes();
+        int bit;
+        for (int i = 0; i < bs.length; i++) {
+            bit = (bs[i] & 0x0f0) >> 4;
+            sb.append(chars[bit]);
+            bit = bs[i] & 0x0f;
+            sb.append(chars[bit]);
+            // sb.append(' ');
+        }
+        return sb.toString().trim();
+    }
+    /**
+     * 将16进制转为字符串
+     * @param hexStr
+     * @return
+     */
+    public static String hexStrToString(String hexStr) {
+        String str = "0123456789ABCDEF";
+        char[] hexs = hexStr.toCharArray();
+        byte[] bytes = new byte[hexStr.length() / 2];
+        int n;
+        for (int i = 0; i < bytes.length; i++) {
+            n = str.indexOf(hexs[2 * i]) * 16;
+            n += str.indexOf(hexs[2 * i + 1]);
+            bytes[i] = (byte) (n & 0xff);
+        }
+        return new String(bytes);
+    }
+
+    /**
      * //剔除HTML空格 和 空格
      *
      * @param s
@@ -241,34 +257,73 @@ public class TextUtils {
     public static String trim(String s) {
 
         int l = s.length();
-
         int a = 0, b = 0;
-
         boolean isA = false;
         boolean isB = false;
-
         char[] chars = s.toCharArray();
 
         for (int i = 0; i < chars.length; i++) {
-
             if (!isA && chars[i] != 160 && chars[i] != 32) {
                 a = i;
                 isA = true;
             }
-
             if (!isB && chars[chars.length - i - 1] != 160 && chars[chars.length - i - 1] != 32) {
                 b = chars.length - i;
                 isB = true;
             }
-
             if (isA && isB) {
                 break;
             }
 
         }
-
         return s.substring(a, b);
     }
 
+    /**
+     * 标记 人民币
+     * @param text
+     * @param markColor Color.parseColor("#ffff5c2a")
+     * @return
+     */
+    public static SpannableString markTextRMB(String text, int markColor, boolean markBold){
+        return markText(text, "¥\\d+.?\\d*", markColor, markBold);
+    }
+
+    /**
+     * 标记 被 格式化的数字
+     * @see FormatUtils#formatNum(long)
+     * @param text
+     * @param markColor
+     * @param markBold
+     * @return
+     */
+    public static SpannableString markTextFormatNum(String text, int markColor, boolean markBold){
+        return markText(text, "[\\da-zA-Z+]+", markColor, markBold);
+    }
+
+    /**
+     * 标记文本
+     * @param text 文本
+     * @param regex 正则查找要被标记的部分
+     * @param markColor  标记部分的颜色
+     * @param markBold   标记部分是否加粗
+     * @return
+     */
+    public static SpannableString markText(String text, String regex ,int markColor, boolean markBold){
+        SpannableString ss = new SpannableString(text);
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+        while (matcher.find()){
+            int start = matcher.start();
+            int end = matcher.end();
+//            System.out.println("group" +matcher.group() + "  start:" + start + "   end:" + end);
+            ss.setSpan(new ForegroundColorSpan(markColor), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            if (markBold) {
+                ss.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        }
+        return ss;
+    }
 
 }
