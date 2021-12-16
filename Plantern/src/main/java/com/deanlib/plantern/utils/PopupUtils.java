@@ -1,5 +1,6 @@
 package com.deanlib.plantern.utils;
 
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.deanlib.plantern.Plantern;
@@ -26,6 +27,21 @@ public class PopupUtils {
     }
 
     public static void sendToast(String msg, int duration) {
-        Toast.makeText(Plantern.getAppContext(), msg, duration).show();
+        //支持在子线程使用的 toast
+        Looper myLooper = Looper.myLooper();
+        if (myLooper == null) {
+            Looper.prepare();
+            myLooper = Looper.myLooper();
+        }
+
+        Toast toast = Toast.makeText(Plantern.getAppContext(), msg, duration);
+//      toast.setGravity(Gravity.CENTER, 0, 0);
+
+        toast.show();
+        if (myLooper != null) {
+            Looper.loop();
+            myLooper.quit();
+        }
     }
+
 }
